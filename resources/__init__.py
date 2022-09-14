@@ -126,7 +126,7 @@ class POSTResource(Resource, POSTResourceable):
             if relation_model := self._one_to_many.get(col):
                 _id = data[col]
                 if not relation_model.get(id=_id):
-                    return {str(col): "not foind"}, 404
+                    return {str(col): "not found"}, 404
                 value = _id 
             elif relation_model := self._many_to_many_fields.get(col):
                 _ids = data[col]
