@@ -114,32 +114,29 @@ class LISTResource(Resource, LISTResourceable):
 class POSTResource(Resource, POSTResourceable):
     model = None
     parser = None
-    _many_to_many_fields = []
-    _one_to_many =  {}
-    _local_fields = []
+    _one_to_many = {}
+    _many_to_many_fields = {}
+
     
     def post(self):
         data = self.parser.parse_args()
-        new_data = {}
-        
+        model = self.model()
         for col in data:
-            if data[col] and col in self._local_fields:
-                new_data[col] = data[col]
-        model = self.model(**new_data)
-        
-        for col in data:
-            if col in self._one_to_many:
-                for_model = self._one_to_many[col].get(id=data[col])
-                setattr(model, col, for_model)
-
-        for col in self._many_to_many_fields:
-            relation = getattr(model, col)
-            relation.append(data[col])
-
-        
-        model.save()
-        
-
+            value = None
+            if relation_model := self._one_to_many.get(col):
+                _id = data[col]
+                if not relation_model.get(id=_id):
+                    return {str(col): "not foind"}, 404
+                value = _id 
+            elif relation_model := self._many_to_many_fields.get(col):
+                _ids = data[col]
+                in_ = getattr(getattr(relation_model, 'id'), 'in_')
+                value = relation_model.query.filter(in_(_ids)).all()
+            elif data[col]:
+                value = data[col]
+            if value:
+                setattr(model, col, value)            
+                model.save()
         return  model.serialize(), 200
 
 class GRUDResource(GETResource, DELETEResource,PUTResource,PATCHResource,Resourceable):

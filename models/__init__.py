@@ -29,6 +29,7 @@ class ModelInterface:
 
 class BaseModel(ModelInterface):
     fields_to_serializer = ['id']
+    _many_to_many_fields_serializer = {}
     
     @classmethod
     def _get(cls, **kwargs):
@@ -47,7 +48,13 @@ class BaseModel(ModelInterface):
     def serialize(self):
         output = {}
         for field in self.fields_to_serializer:
-            output[field] = getattr(self, str(field))
+            value = getattr(self, str(field))
+            output[field] = value
+        
+        for field in self._many_to_many_fields_serializer:
+            value = getattr(self, str(field))
+            value = [{'id': row.id} for row in value]
+            output[field] = value
         return output
 
     def delete(self):

@@ -1,6 +1,7 @@
 from enum import Enum
 from db import db
 from models import BaseModel
+from models.user import UserModel
 
 
 autohrs_books = db.Table('autohrs_books', 
@@ -26,8 +27,9 @@ class BookModel(db.Model, BaseModel):
 
 class OrderModel(db.Model, BaseModel):
     __tablename__ = 'orders'
-    fields_to_serializer = ['id', 'title', 'payments', 'user_id', 'books']
-
+    fields_to_serializer = ['id', 'title',  'user_id']
+    _many_to_many_fields_serializer = ['books', 'payments']
+    
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=True)
     payments = db.relationship('PaymentModel', backref='order', lazy=True)

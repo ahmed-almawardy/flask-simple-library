@@ -30,9 +30,9 @@ class Orders(LISTResource, POSTResource):
     parser.add_argument('title', type=str, required=True, nullable=False)
     parser.add_argument('payments', type=list[int], required=False, nullable=True)
     parser.add_argument('user_id', type=int, required=True, nullable=False)
-    parser.add_argument('books', type=list, required=True, nullable=False)
-    _many_to_many_fields = ['books', 'payments']
-
+    parser.add_argument('books', type=int, required=True, action='append', nullable=False)
+    _one_to_many = {'user_id': UserModel,}
+    _many_to_many_fields ={'books': BookModel,'payment': PaymentModel}
 
 class Order(GRUDResource):
     model = OrderModel
@@ -40,9 +40,10 @@ class Order(GRUDResource):
     parser.add_argument('title', type=int, required=False, nullable=False)
     parser.add_argument('payments', type=list, required=False, nullable=True)
     parser.add_argument('user_id', type=int, required=False, nullable=False)
-    parser.add_argument('books', type=list[int], required=False, nullable=True)
-    _many_to_many_fields = ['books', 'payments']
-    _one_to_many = {'user': UserModel}
+    parser.add_argument('books', type=int, required=False, nullable=True)
+    _one_to_many = {'user_id': UserModel,}
+    _many_to_many_fields ={'books': BookModel,'payment': PaymentModel}
+
 
 class Payments(LISTResource):
     model = PaymentModel
