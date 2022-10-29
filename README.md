@@ -1,2 +1,2 @@
 # flask-simple-library
-so simple library
+Simple Flask Library
